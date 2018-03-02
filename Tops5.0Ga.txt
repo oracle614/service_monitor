@@ -1,0 +1,376 @@
+*** Settings ***
+Library           RequestsLibrary
+Library           DatabaseLibrary
+Resource          Public_Keyword.txt
+Library           rf_public.py
+Library           rf_mysql.py
+Library           rf_result.py
+
+*** Keywords ***
+gateway_login
+    [Arguments]    ${loginName}    ${password}
+    ${uri}    Set Variable    /oauth/Authorization/Login
+    ${pwd}    Get MD5 Value    ${password}    #MD5加密
+    ${gateway_login_SignData}    Create Dictionary    agent=android    appcode=app_broker    loginName=${loginName}    password=${pwd}
+    ${gateway_login_SignData}    dictionary to form    ${gateway_login_SignData}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    ${gateway_login_SignData}    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}
+    Create Session    Oauth    @{gateway_host}[2]    ${headers}
+    ${gateway_login_Reponse}    Post Request    Oauth    ${uri}    ${gateway_login_SignData}    ${headers}
+    [Return]    ${gateway_login_Reponse}
+
+getLandingFirstPage
+    [Arguments]    ${advertiseKey}    ${latitude}    ${longitude}    ${cityId}    &{Authorization}
+    [Documentation]    【首页】getLandingFirstPage
+    ${uri}    Set Variable    /broker-service-api/v1/brokerLandingPage/getLandingFirstPage
+    ${getLandingFirstPage}    Create Dictionary    advertiseKey=${advertiseKey}    latitude=${latitude}    longitude=${longitude}    cityId=${cityId}
+    ${getLandingFirstPage}    dictionary_to_form    ${getLandingFirstPage}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${getLandingFirstPage}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${getLandingFirstPage}
+    [Return]    ${Reponse}
+
+newProductList
+    [Arguments]    ${cityId}    &{Authorization}
+    [Documentation]    【首页】newProductList
+    ${uri}    Set Variable    /broker-service-api/v1/brokerLandingPage/newProductList
+    ${newProductList}    Create Dictionary    cityId=${cityId}
+    ${newProductList}    dictionary_to_form    ${newProductList}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${newProductList}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${newProductList}
+    [Return]    ${Reponse}
+
+localAdvertList
+    [Arguments]    ${advertiseKey}    ${cityId}    &{Authorization}
+    [Documentation]    【首页】localAdvertList
+    ${uri}    Set Variable    /broker-service-api/v1/brokerLandingPage/localAdvertList
+    ${localAdvertList}    Create Dictionary    advertiseKey=${advertiseKey}    cityId=${cityId}
+    ${localAdvertList}    dictionary_to_form    ${localAdvertList}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${localAdvertList}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${localAdvertList}
+    [Return]    ${Reponse}
+
+recommendList
+    [Arguments]    ${latitude}    ${longitude}    ${cityId}    &{Authorization}
+    [Documentation]    【首页】recommendList
+    ${uri}    Set Variable    /broker-service-api/v1/brokerLandingPage/recommendList
+    ${recommendList}    Create Dictionary    latitude=${latitude}    longitude=${longitude}    cityId=${cityId}
+    ${recommendList}    dictionary_to_form    ${recommendList}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${recommendList}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${recommendList}
+    [Return]    ${Reponse}
+
+startAdvertising
+    [Arguments]    ${advertiseKey}    &{Authorization}
+    [Documentation]    【首页】startAdvertising
+    ${uri}    Set Variable    /broker-service-api/v1/brokerLandingPage/startAdvertising
+    ${startAdvertising}    Create Dictionary    advertiseKey=${advertiseKey}
+    ${startAdvertising}    dictionary_to_form    ${startAdvertising}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${startAdvertising}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${startAdvertising}
+    [Return]    ${Reponse}
+
+getBrokerDetail
+    [Arguments]    ${Authorization}
+    ${uri}    Set Variable    /broker-center-api/v1/broker/getBrokerDetail
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}
+    [Return]    ${Reponse}
+
+销冠页
+    [Arguments]    ${Authorization}
+    ${uri}    Set Variable    /broker-service-api/v1/topsLandingPage/topsCustomerDetail
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}
+    [Return]    ${Reponse}
+
+kberDetail
+    [Arguments]    ${Authorization}
+    ${uri}    Set Variable    /broker-service-api/v1/topsLandingPage/kberDetail
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}
+    [Return]    ${Reponse}
+
+客户列表
+    [Arguments]    ${Authorization}    ${sortType}    ${filterType}
+    ${uri}    Set Variable    /broker-service-api/v1/customer/list
+    ${params}    Create Dictionary    pageIndex=1    pageSize=14    sortType=${sortType}    filterType=${filterType}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}
+    [Return]    ${Reponse}
+
+订单列表
+    [Arguments]    ${Authorization}    ${orderStatus}
+    ${uri}    Set Variable    /broker-service-api/v1/brokerOrder/list
+    ${params}    Create Dictionary    pageIndex=1    pageSize=14    orderStatus=${orderStatus}
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+本地住宅——楼盘列表
+    [Arguments]    ${Authorization}    ${sortId}    ${propertyId}    ${isPre}    ${regionId}    ${sellPointId}
+    ${uri}    Set Variable    /broker-service-api/v1/building/buildingList
+    ${params}    Create Dictionary    pageIndex=1    pageSize=14    longitude=120.183841    latitude=30.222053    cityId=112
+    ...    sortId=${sortId}    propertyId=${propertyId}    isPre=${isPre}    regionId=${regionId}    sellPointId=${sellPointId}
+    ${params_from}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params_from}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params_from}
+    [Return]    ${Reponse}
+
+楼盘详情
+    [Arguments]    ${Authorization}    ${buildingId}
+    ${uri}    Set Variable    /broker-service-api/v1/building/buildingDetail/${buildingId}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}
+    [Return]    ${Reponse}
+
+【忘记密码】获取验证码
+    [Arguments]    ${phone}
+    ${uri}    Set Variable    /notify/SmsVerifyCode/Generate
+    ${body}    Create Dictionary    agent=iOS    app=app_broker    invalidations=3    key=forgotpwd    phone=86${phone}
+    ${body}    Dictionary_to_form    ${body}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    ${body}    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    post    api    ${uri}    ${body}    ${headers}
+    [Return]    ${Reponse}
+
+【忘记密码】修改密码
+    [Arguments]    ${loginName}    ${password}    ${code}
+    ${pwd}    Get MD5 Value    ${password}    #MD5加密
+    ${uri}    Set Variable    /oauth/ForgotPassword/v1/ChangePassword
+    ${body}    Create Dictionary    code=${code}    codeKey=forgotpwd    loginName=86${loginName}    password=${pwd}
+    ${body}    Dictionary_to_form    ${body}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    ${body}    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    post    api    ${uri}    ${body}    ${headers}
+    [Return]    ${Reponse}
+
+tc_passed
+    [Arguments]    ${tc_id}    ${tc_name}    ${product_id}
+    rf_passed    ${tc_id}    ${tc_name}    ${product_id}
+
+tc_failed
+    [Arguments]    ${tc_id}    ${tc_name}    ${product_id}    ${content}
+    ${email_sand}    create list    188556051@qq.com    lvjunjie2757@tops001.com    #配置邮件收件人
+    Comment    ${emai_parameterl}    create list    lvjunjie2757@tops001.com    ${email_sand}    C:/Users/Administrator/AppData/Local/Temp/RIDEzynqyg.d/log.html    销冠经纪超时告警
+    ${emai_parameterl}    create list    lvjunjie2757@tops001.com    ${email_sand}    c:/setup.log    销冠经纪告警
+    ${content}    rf_replace    ${content}    "    '
+    ${result_id}    rf_failed    ${tc_id}    ${tc_name}    ${product_id}    ${content}
+    sleep    1
+    @{failed_count}    get_failed_count    ${tc_id}    ${result_id}    ${10}    #获取最近10分钟的失败的测试用例数量
+    log    @{failed_count}[0]
+    log    @{failed_count}[2]
+    log    ${emai_parameterl}
+    ${email_result}    rf_failed_notice    ${1}    @{failed_count}[0]    @{failed_count}[2]    ${emai_parameterl}
+    log    ${email_result}
+
+tc_timeout
+    [Arguments]    ${tc_id}    ${tc_name}    ${product_id}    ${content}
+    ${email_sand}    create list    188556051@qq.com    lvjunjie2757@tops001.com    #配置邮件收件人
+    Comment    ${emai_parameterl}    create list    lvjunjie2757@tops001.com    ${email_sand}    C:/Users/Administrator/AppData/Local/Temp/RIDEzynqyg.d/log.html    销冠经纪超时告警
+    ${emai_parameterl}    create list    lvjunjie2757@tops001.com    ${email_sand}    c:/setup.log    销冠经纪告警
+    ${content}    rf_replace    ${content}    "    '
+    ${result_id}    rf_failed    ${tc_id}    ${tc_name}    ${product_id}    ${content}
+    sleep    1
+    @{failed_count}    get_failed_count    ${tc_id}    ${result_id}    ${10}    #获取最近10分钟的失败的测试用例数量
+    log    @{failed_count}[0]
+    log    @{failed_count}[2]
+    log    ${emai_parameterl}
+    ${email_result}    rf_failed_notice    ${1}    @{failed_count}[0]    @{failed_count}[2]    ${emai_parameterl}
+    log    ${email_result}
+
+【销冠助手】我的出售房源列表
+    [Arguments]    ${Authorization}
+    ${uri}    Set Variable    /broker-service-api/v1/secondhouse/getSellSecondHouseList
+    ${params}    Create Dictionary    sortType=4    cityId=112    pageSize=14    pageIndex=1    queryType=1
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+【销冠助手】我的出租房源列表
+    [Arguments]    ${Authorization}
+    ${uri}    Set Variable    /broker-service-api/v1/secondhouse/getRentSecondHouseList
+    ${params}    Create Dictionary    sortType=4    cityId=112    pageSize=14    pageIndex=1    queryType=1
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+【销冠助手】出售房源详情
+    [Arguments]    ${Authorization}    ${houseId}
+    ${uri}    Set Variable    /broker-service-api/v1/secondhouse/house/sell/${houseId}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}
+    [Return]    ${Reponse}
+
+【销冠助手】出租房源详情
+    [Arguments]    ${Authorization}    ${houseId}
+    ${uri}    Set Variable    /broker-service-api/v1/secondhouse/house/rent/${houseId}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}
+    [Return]    ${Reponse}
+
+【销冠助手】二手房列表
+    [Arguments]    ${Authorization}
+    ${uri}    Set Variable    /broker-service-api/v1/secondhouse/getSellSecondHouseList
+    Comment    ${params}    Create Dictionary    districtId=0    sortType=4    pageSize=14    pageIndex=1
+    ...    queryType=2    cityId=112
+    ${params}    Create Dictionary    districtId=1708    sortType=1    pageSize=14    pageIndex=1    queryType=2
+    ...    cityId=176
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    ...    Geolocation=120.183882,30.222052
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+【销冠助手】租房列表
+    [Arguments]    ${Authorization}
+    ${uri}    Set Variable    /broker-service-api/v1/secondhouse/getRentSecondHouseList
+    ${params}    Create Dictionary    districtId=0    sortType=4    pageSize=14    pageIndex=1    queryType=2
+    ...    cityId=112
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+【销冠助手】求购匹配新房房源
+    [Arguments]    ${Authorization}    ${customerId}
+    ${uri}    Set Variable    /broker-service-api/v1/brokerHouseManage/buildingMatchList
+    ${params}    Create Dictionary    customerId=${customerId}    cityId=112    pageSize=14    pageIndex=1
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+【销冠助手】求购匹配二手房房源
+    [Arguments]    ${Authorization}    ${Id}
+    ${uri}    Set Variable    /broker-service-api/v1/demand/getMatchSecondHouseListByPurchaseId/${Id}
+    ${params}    Create Dictionary    pageSize=14    pageIndex=1
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+【销冠助手】出售匹配客源
+    [Arguments]    ${Authorization}    ${Id}
+    ${uri}    Set Variable    /broker-service-api/v1/demand/getMatchCustomerListBySellId/${Id}
+    ${params}    Create Dictionary    pageSize=14    pageIndex=1
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+【销冠助手】求租匹配房源
+    [Arguments]    ${Authorization}    ${Id}
+    ${uri}    Set Variable    /broker-service-api/v1/demand/getMatchSecondHouseListByWantId/${Id}
+    ${params}    Create Dictionary    pageSize=14    pageIndex=1
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+【销冠助手】出租匹配客源
+    [Arguments]    ${Authorization}    ${Id}
+    ${uri}    Set Variable    /broker-service-api/v1/demand/getMatchCustomerListByRentId/${Id}
+    ${params}    Create Dictionary    pageSize=14    pageIndex=1
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+【销冠助手】小区搜索
+    [Arguments]    ${Authorization}    ${keyWords}
+    ${uri}    Set Variable    /broker-service-api/v1/secondhouse/project/fuzzy
+    ${params}    Create Dictionary    pageSize=20    pageIndex=1    keyWords=${keyWords}    cityId=112
+    ${params}    Dictionary_to_form    ${params}
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}?${params}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}    ${params}
+    [Return]    ${Reponse}
+
+getModuleList九宫格
+    [Arguments]    ${Authorization}
+    ${uri}    Set Variable    /broker-center-api/v1/module/getModuleList
+    ${Date}    time_gmt
+    ${Signature}    sign_v4    @{gateway_host}[2]    ${uri}    \    ${Date}
+    ${headers}    Create Dictionary    User-Agent=com.kakao.topbroker/3.0.9-debug Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM705 Build/SANFRANCISCO)    Content-Type=application/x-www-form-urlencoded    Signature=@{Signature}[0]    Date=${Date}    Authorization=${Authorization}
+    Create Session    api    @{gateway_host}[2]    ${headers}
+    ${Reponse}    get Request    api    ${uri}    ${headers}
+    [Return]    ${Reponse}

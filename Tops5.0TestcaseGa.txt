@@ -1,0 +1,492 @@
+*** Settings ***
+Library           DatabaseLibrary
+Library           Selenium2Library
+Library           rf_public.py
+Resource          Tops5.0Ga.txt
+
+*** Test Cases ***
+gateway_login
+    [Timeout]    4 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    1
+    ${tc_name}    Set Variable    销冠经纪登录
+    log    登陆
+    ${LoginName0}    Set Variable
+    ${Password0}    Set Variable
+    ${Reponse}    gateway_login    15157163734    a1478520B
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    ${a}    Evaluate    str(${Reponse.json()}).encode('utf8')
+    log    ${a}
+    ${ak}    Set Variable    ${Reponse.json()['Data']['AccessToken']}
+    Set Global Variable    ${ak}
+    ${brokerid}    Set Variable    ${Reponse.json()['Data']['BrokerID']}
+    Set Global Variable    ${brokerid}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+getLandingFirstPage
+    [Timeout]    3 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    2
+    ${tc_name}    Set Variable    销冠经纪【首页】getLandingFirstPage接口
+    log    【首页】getLandingFirstPage
+    ${advertiseKey}    Set Variable    advert5
+    ${latitude}    Set Variable    30.222176
+    ${longitude}    Set Variable    120.183798
+    ${cityId}    Set Variable    112
+    ${Authorization}    Set Variable    ${ak}
+    ${Reponse}    getLandingFirstPage    ${advertiseKey}    ${latitude}    ${longitude}    ${cityId}    Authorization=${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    查询成功    Data    nationalAdvertisementVOs    advertisementId
+    ...    advertisementName    picUrl    sort    keepSeconds
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+newProductList
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    3
+    ${tc_name}    Set Variable    销冠经纪【首页】newProductList 接口
+    log    【首页】newProductList
+    ${cityId}    Set Variable    112
+    ${Reponse}    newProductList    ${cityId}    Authorization=${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    查询成功    newProductPicUrl    newProducts    productId
+    ...    productType    productName    productPicUrl    productRemark    dealCount
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+localAdvertList
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    4
+    ${tc_name}    Set Variable    销冠经纪【首页】localAdvertList接口
+    log    【首页】localAdvertList接口
+    ${cityId}    Set Variable    112
+    ${advertiseKey}    Set Variable    advert5
+    ${Reponse}    localAdvertList    ${advertiseKey}    ${cityId}    Authorization=${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    查询成功    Data    advertisementVOs    advertisementId
+    ...    advertisementName    picUrl    sort    keepSeconds    jumpType    jumpUrl
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+recommendList
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    5
+    ${tc_name}    Set Variable    销冠经纪【首页】recommendList接口
+    log    【首页】recommendList
+    ${latitude}    Set Variable    30.222176
+    ${longitude}    Set Variable    120.183798
+    ${cityId}    Set Variable    112
+    ${Authorization}    Set Variable    ${ak}
+    ${Reponse}    recommendList    ${latitude}    ${longitude}    ${cityId}    Authorization=${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    查询成功    Data    recommendId    recommendName
+    ...    recommendType    recommendPicUrl    remark
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+startAdvertising
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    6
+    ${tc_name}    Set Variable    销冠经纪【首页】startAdvertising 接口
+    log    【首页】startAdvertising
+    ${advertiseKey}    Set Variable    splash
+    ${Reponse}    startAdvertising    ${advertiseKey}    Authorization=${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    Comment    : FOR    ${i}    IN    查询成功    Data    advertisementId
+    ...    advertisementName    picUrl    sort    keepSeconds    jumpType    jumpUrl
+    Comment    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+getBrokerDetail
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    7
+    ${tc_name}    Set Variable    销冠经纪获取经纪人信息接口
+    log    获取经纪人信息
+    ${Reponse}    getBrokerDetail    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+销冠页
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    8
+    ${tc_name}    Set Variable    销冠经纪销冠页接口
+    log    销冠页接口
+    ${Reponse}    销冠页    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerCount    addCustomerCount    need2AddCount    localPerfectCount
+    ...    halfCustomerId    halfCustomerName    halfCustomerPhone    perfectCount    need2UpdCount    isTotalFollowed
+    ...    followCount
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+kberdetail
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    9
+    ${tc_name}    Set Variable    销冠经纪客+kberdetail接口
+    log    销冠经纪客+kberdetail接口
+    ${Reponse}    kberDetail    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    kberAuthority    true
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+客户列表
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    10
+    ${tc_name}    Set Variable    销冠经纪客户列表接口
+    log    客户列表接口
+    ${Reponse}    客户列表    ${ak}    1    0
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerId    brokerId    customerName    gender
+    ...    level    brokerCustomerPhone    phoneId    phone    firstLetter    operateType
+    ...    operateTime    sourceType    createTime
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+订单列表
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    11
+    ${tc_name}    Set Variable    销冠经纪订单列表接口
+    log    订单列表接口
+    ${Reponse}    订单列表    ${ak}    2
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    count    customerId    customerName    customerPhone
+    ...    customerGender    businessTypes    orderNo    businessCode    businessName
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+本地住宅——楼盘列表
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    12
+    ${tc_name}    Set Variable    销冠经纪本地住宅楼盘列表接口
+    log    本地住宅楼盘列表接口
+    ${Reponse}    本地住宅——楼盘列表    ${ak}    0    0    3    0
+    ...    0
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    buildingId    buildingName    logoPicUrl    distance
+    ...    propertyName    houseStatuses    isHot    isCollection    isRealTime    plate
+    ...    avgPrice    avgPriceValue    avgPriceUnit    displayScore    commission    latitude
+    ...    longitude
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+楼盘详情
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    13
+    ${tc_name}    Set Variable    销冠经纪楼盘详情接口
+    log    楼盘详情接口
+    ${Reponse}    楼盘详情    ${ak}    9
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    buildingId    buildingName    logoPicUrl    propertyName
+    ...    houseStatuses    isHot    isCollection    isRealTime    plate    avgPrice
+    ...    avgPriceValue    avgPriceUnit    lowestPriceValue    lowestPriceUnit    displayScore    commission
+    ...    latitude    longitude    buildingCityId    beginTime    endTime    phones
+    ...    buildingPicVOs    sort    picUrl    buildingAddress    protectPushComeDay    isComeLook
+    ...    isLookReward    isVoucherReward    isDealReward    attentionText    attentionRanking    averageReturnRanking
+    ...    averageReturnText    roomRemark    roomTypes
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+getModuleList九宫格
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    14
+    ${tc_name}    Set Variable    【销冠经纪】getModuleList九宫格
+    log    【销冠经纪】getModuleList九宫格
+    ${Reponse}    getModuleList九宫格    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    totalMoneyAmount    thisMonthMoneyAmount
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】我的出售房源列表
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    101
+    ${tc_name}    Set Variable    【销冠助手】我的出售房源列表接口
+    log    【销冠助手】我的出售房源列表接口
+    ${Reponse}    【销冠助手】我的出售房源列表    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    secondHouseVO    houseId    price    buildArea
+    ...    houseStatus
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】我的出租房源列表
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    102
+    ${tc_name}    Set Variable    【销冠助手】我的出租房源列表接口
+    log    【销冠助手】我的出租房源列表接口
+    ${Reponse}    【销冠助手】我的出租房源列表    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    secondHouseVO    houseId    price    buildArea
+    ...    houseStatus
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】出售房源详情
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    103
+    ${tc_name}    Set Variable    【销冠助手】出售房源详情接口
+    log    【销冠助手】出售房源详情接口
+    ${Reponse}    【销冠助手】出售房源详情    ${ak}    42082
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    houseId    projectVO    projectName    commissionRate
+    ...    room    picUrlAndDescObjList
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】出租房源详情
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    104
+    ${tc_name}    Set Variable    【销冠助手】出租房源详情接口
+    log    【销冠助手】出租房源详情接口
+    ${Reponse}    【销冠助手】出租房源详情    ${ak}    1722604
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    houseId    projectVO    projectId    projectName
+    ...    buildArea    isOpen    houseStatus    price    kber
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】二手房列表
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    105
+    ${tc_name}    Set Variable    【销冠助手】二手房列表接口
+    log    【销冠助手】二手房列表接口
+    ${Reponse}    【销冠助手】二手房列表    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    secondHouseVO    houseId    price    buildArea
+    ...    houseStatus
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】租房列表
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    106
+    ${tc_name}    Set Variable    【销冠助手】租房列表接口
+    log    【销冠助手】租房列表接口
+    ${Reponse}    【销冠助手】租房列表    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    secondHouseVO    houseId    price    buildArea
+    ...    houseStatus    count
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】求购匹配新房房源
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    107
+    ${tc_name}    Set Variable    【销冠助手】求购匹配房源接口
+    log    【销冠助手】求购匹配房源接口
+    ${Reponse}    【销冠助手】求购匹配新房房源    ${ak}    2088911
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    buildingId
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】求购匹配二手房房源
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    108
+    ${tc_name}    Set Variable    【销冠助手】求购匹配二手房房源接口
+    log    【销冠助手】求购匹配二手房房源接口
+    ${Reponse}    【销冠助手】求购匹配二手房房源    ${ak}    56628
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    houseId
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】出售匹配客源
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    109
+    ${tc_name}    Set Variable    【销冠助手】出售匹配客源接口
+    log    【销冠助手】出售匹配客源接口
+    ${Reponse}    【销冠助手】出售匹配客源    ${ak}    1723508
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    demandId    childId    customerId
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】求租匹配房源
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    110
+    ${tc_name}    Set Variable    【销冠助手】求租匹配房源接口
+    log    【销冠助手】求租匹配房源接口
+    ${Reponse}    【销冠助手】求租匹配房源    ${ak}    56629
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    demandId    childId    houseId
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】出租匹配客源
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    111
+    ${tc_name}    Set Variable    【销冠助手】出租匹配客源接口
+    log    【销冠助手】出租匹配客源接口
+    ${Reponse}    【销冠助手】出租匹配客源    ${ak}    1722604
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    demandId    customerId    childId
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦
+
+【销冠助手】小区搜索
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    112
+    ${tc_name}    Set Variable    【销冠助手】小区搜索接口
+    log    【销冠助手】小区搜索接口
+    ${Reponse}    【销冠助手】小区搜索    ${ak}    翡翠城
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    items    items    projectId
+    ...    projectName    翡翠城
+    \    should contain    ${Reponse.text}    ${i}
+    [Teardown]    Run keywords    Run Keyword If Test Passed    tc_passed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    AND    Run Keyword If Test failed    tc_failed    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}失败
+    ...    AND    Run Keyword If Timeout Occurred    tc_timeout    ${tc_id}    ${tc_name}    ${product_id}
+    ...    ${tc_name}超时啦

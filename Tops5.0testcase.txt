@@ -1,0 +1,482 @@
+*** Settings ***
+Suite Teardown
+Test Teardown
+Library           DatabaseLibrary
+Library           Selenium2Library
+Library           rf_public.py
+Resource          Tops5.0.txt
+
+*** Test Cases ***
+gateway_login
+    [Template]
+    [Timeout]    6 seconds
+    log    登陆
+    ${LoginName0}    Set Variable    15157163734
+    ${Password0}    Set Variable    147852
+    ${Login_return0}    gateway_login    ${LoginName0}    ${Password0}
+    should be equal as numbers    ${Login_return0.json()['Code']}    0
+    log    ${Login_return0.text}
+    ${a}    Evaluate    str(${Login_return0.json()}).encode('utf8')
+    log    ${a}
+    ${ak}    Set Variable    ${Login_return0.json()['Data']['AccessToken']}
+    Set Global Variable    ${ak}
+    ${brokerid}    Set Variable    ${Login_return0.json()['Data']['BrokerID']}
+    Set Global Variable    ${brokerid}
+    [Teardown]
+
+getLandingFirstPage
+    [Timeout]    6 seconds
+    log    【首页】getLandingFirstPage
+    ${advertiseKey}    Set Variable    advert5
+    ${latitude}    Set Variable    30.222176
+    ${longitude}    Set Variable    120.183798
+    ${cityId}    Set Variable    112
+    ${Authorization}    Set Variable    ${ak}
+    ${getLandingFirstPage_Reponse}    getLandingFirstPage    ${advertiseKey}    ${latitude}    ${longitude}    ${cityId}    Authorization=${ak}
+    log    getLandingFirstPage_Reponse=${getLandingFirstPage_Reponse.json()}
+    should be equal as numbers    ${getLandingFirstPage_Reponse.json()['Code']}    0
+
+newProductList
+    [Timeout]    6 seconds
+    log    【首页】newProductList
+    ${cityId}    Set Variable    112
+    ${newProductList_Reponse}    newProductList    ${cityId}    Authorization=${ak}
+    log    newProductList_Reponse=${newProductList_Reponse.json()}
+    should be equal as numbers    ${newProductList_Reponse.json()['Code']}    0
+
+localAdvertList
+    [Timeout]    6 seconds
+    log    【首页】localAdvertList
+    ${cityId}    Set Variable    112
+    ${advertiseKey}    Set Variable    advert5
+    ${localAdvertList_Reponse}    localAdvertList    ${advertiseKey}    ${cityId}    Authorization=${ak}
+    log    localAdvertList_Reponse=${localAdvertList_Reponse.json()}
+    should be equal as numbers    ${localAdvertList_Reponse.json()['Code']}    0
+
+recommendList
+    [Documentation]    【首页】recommendList
+    [Timeout]    6 seconds
+    log    【首页】recommendList
+    ${latitude}    Set Variable    30.222176
+    ${longitude}    Set Variable    120.183798
+    ${cityId}    Set Variable    112
+    ${Authorization}    Set Variable    ${ak}
+    ${recommendList_Reponse}    recommendList    ${latitude}    ${longitude}    ${cityId}    Authorization=${ak}
+    log    recommendList_Reponse=${recommendList_Reponse.json()}
+    should be equal as numbers    ${recommendList_Reponse.json()['Code']}    0
+
+startAdvertising
+    [Documentation]    【首页】startAdvertising
+    [Timeout]    6 seconds
+    log    【首页】newProductList
+    ${advertiseKey}    Set Variable    splash
+    ${startAdvertising_Reponse}    startAdvertising    ${advertiseKey}    Authorization=${ak}
+    log    startAdvertising_Reponse=${startAdvertising_Reponse.json()}
+    should be equal as numbers    ${startAdvertising_Reponse.json()['Code']}    ${0}
+    [Teardown]
+
+getBrokerDetail
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    7
+    ${tc_name}    Set Variable    销冠经纪获取经纪人信息接口
+    log    获取经纪人信息
+    ${Reponse}    getBrokerDetail    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+
+销冠页
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    8
+    ${tc_name}    Set Variable    销冠经纪销冠页接口
+    log    销冠页接口
+    ${Reponse}    销冠页    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerCount    addCustomerCount    need2AddCount    localPerfectCount
+    ...    halfCustomerId    halfCustomerName    halfCustomerPhone    perfectCount    need2UpdCount    isTotalFollowed
+    ...    followCount
+    \    should contain    ${Reponse.text}    ${i}
+
+kberdetail
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    9
+    ${tc_name}    Set Variable    销冠经纪客+kberdetail接口
+    log    销冠经纪客+kberdetail接口
+    ${Reponse}    kberDetail    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    kberAuthority    true
+    \    should contain    ${Reponse.text}    ${i}
+
+订单列表
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    11
+    ${tc_name}    Set Variable    销冠经纪订单列表接口
+    log    订单列表接口
+    ${Reponse}    【订单】订单列表    ${ak}    2
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    count    customerId    customerName    customerPhone
+    ...    customerGender    businessTypes    orderNo    businessCode    businessName
+    \    should contain    ${Reponse.text}    ${i}
+
+本地住宅——楼盘列表
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    12
+    ${tc_name}    Set Variable    销冠经纪本地住宅楼盘列表接口
+    log    本地住宅楼盘列表接口
+    ${Reponse}    本地住宅——楼盘列表    ${ak}    0    0    3    0
+    ...    0
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    buildingId    buildingName    logoPicUrl    distance
+    ...    propertyName    houseStatuses    isHot    isCollection    isRealTime    plate
+    ...    avgPrice    avgPriceValue    avgPriceUnit    displayScore    commission    latitude
+    ...    longitude
+    \    should contain    ${Reponse.text}    ${i}
+
+楼盘详情
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    13
+    ${tc_name}    Set Variable    销冠经纪楼盘详情接口
+    log    楼盘详情接口
+    ${Reponse}    楼盘详情    ${ak}    9
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    buildingId    buildingName    logoPicUrl    propertyName
+    ...    houseStatuses    isHot    isCollection    isRealTime    plate    avgPrice
+    ...    avgPriceValue    avgPriceUnit    lowestPriceValue    lowestPriceUnit    displayScore    commission
+    ...    latitude    longitude    buildingCityId    beginTime    endTime    phones
+    ...    buildingPicVOs    sort    picUrl    buildingAddress    protectPushComeDay    isComeLook
+    ...    isLookReward    isVoucherReward    isDealReward    attentionText    attentionRanking    averageReturnRanking
+    ...    averageReturnText    roomRemark    roomTypes
+    \    should contain    ${Reponse.text}    ${i}
+
+getModuleList九宫格
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    14
+    ${tc_name}    Set Variable    【销冠经纪】getModuleList九宫格
+    log    【销冠经纪】getModuleList九宫格
+    ${Reponse}    getModuleList九宫格    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    totalMoneyAmount    thisMonthMoneyAmount
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】我的出售房源列表
+    [Timeout]    6 seconds
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    101
+    ${tc_name}    Set Variable    【销冠助手】我的出售房源列表接口
+    log    【销冠助手】我的出售房源列表接口
+    ${Reponse}    【销冠助手】我的出售房源列表    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    secondHouseVO    houseId    price    buildArea
+    ...    houseStatus
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】我的出租房源列表
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    102
+    ${tc_name}    Set Variable    【销冠助手】我的出租房源列表接口
+    log    【销冠助手】我的出租房源列表接口
+    ${Reponse}    【销冠助手】我的出租房源列表    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    secondHouseVO    houseId    price    buildArea
+    ...    houseStatus
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】出售房源详情
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    103
+    ${tc_name}    Set Variable    【销冠助手】出售房源详情接口
+    log    【销冠助手】出售房源详情接口
+    ${Reponse}    【销冠助手】出售房源详情    ${ak}    1215784
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    houseId    projectVO    projectName    commissionRate
+    ...    room    picUrlAndDescObjList
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】出租房源详情
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    104
+    ${tc_name}    Set Variable    【销冠助手】出租房源详情接口
+    log    【销冠助手】出租房源详情接口
+    ${Reponse}    【销冠助手】出租房源详情    ${ak}    1215950
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    houseId    projectVO    projectId    projectName
+    ...    buildArea    isOpen    houseStatus    price    kber
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】二手房列表
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    105
+    ${tc_name}    Set Variable    【销冠助手】二手房列表接口
+    log    【销冠助手】二手房列表接口
+    ${Reponse}    【销冠助手】二手房列表    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    secondHouseVO    houseId    price    buildArea
+    ...    houseStatus
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】租房列表
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    106
+    ${tc_name}    Set Variable    【销冠助手】租房列表接口
+    log    【销冠助手】租房列表接口
+    ${Reponse}    【销冠助手】租房列表    ${ak}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    secondHouseVO    houseId    price    buildArea
+    ...    houseStatus    count
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】求购匹配新房房源
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    107
+    ${tc_name}    Set Variable    【销冠助手】求购匹配房源接口
+    log    【销冠助手】求购匹配房源接口
+    ${Reponse}    【销冠助手】求购匹配新房房源    ${ak}    81329
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    buildingId
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】求购匹配二手房房源
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    108
+    ${tc_name}    Set Variable    【销冠助手】求购匹配二手房房源接口
+    log    【销冠助手】求购匹配二手房房源接口
+    ${Reponse}    【销冠助手】求购匹配二手房房源    ${ak}    78627
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    houseId
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】出售匹配客源
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    109
+    ${tc_name}    Set Variable    【销冠助手】出售匹配客源接口
+    log    【销冠助手】出售匹配客源接口
+    ${Reponse}    【销冠助手】出售匹配客源    ${ak}    1215949
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    demandId    childId    customerId
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】求租匹配房源
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    110
+    ${tc_name}    Set Variable    【销冠助手】求租匹配房源接口
+    log    【销冠助手】求租匹配房源接口
+    ${Reponse}    【销冠助手】求租匹配房源    ${ak}    78628
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    demandId    childId    houseId
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】出租匹配客源
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    111
+    ${tc_name}    Set Variable    【销冠助手】出租匹配客源接口
+    log    【销冠助手】出租匹配客源接口
+    ${Reponse}    【销冠助手】出租匹配客源    ${ak}    1215950
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    demandId    customerId    childId
+    \    should contain    ${Reponse.text}    ${i}
+
+【销冠助手】小区搜索
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    112
+    ${tc_name}    Set Variable    【销冠助手】小区搜索接口
+    log    【销冠助手】小区搜索接口
+    ${Reponse}    【销冠助手】小区搜索    ${ak}    翡翠城
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    Data    items    items    projectId
+    ...    projectName    翡翠城
+    \    should contain    ${Reponse.text}    ${i}
+
+【客户】添加客户
+    ${name}    random_name
+    ${phone}    random_phone
+    ${Reponse}    【客户】添加客户    ${ak}    ${name}    1    ${phone}    2
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    ${customerId}    Set Variable    ${Reponse.json()['Data']['customerId']}
+    Set Global Variable    ${customerId}
+    sleep    2
+    ${phone}    random_phone
+    ${Reponse1}    【客户】添加客户    ${ak}    自动化测试${name.decode('utf8')}    1    ${phone}    2
+    log    ${Reponse1.text}
+    should be equal as numbers    ${Reponse1.json()['Code']}    ${0}
+    ${customerId1}    Set Variable    ${Reponse1.json()['Data']['customerId']}
+    Set Global Variable    ${customerId1}
+    ${Reponse2}    【客户】客户详情    ${ak}    ${customerId1}
+
+【客户】客户详情
+    ${Reponse}    【客户】客户详情    ${ak}    ${customerId1}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    ${phoneNo}    Set Variable    ${Reponse.json()['Data']['brokerCustomerDTO']['brokerCustomerPhone'][0]['phone']}
+    ${phoneNo}    Set Variable    86${phoneNo[-11:]}
+    ${phoneId}    Set Variable    ${Reponse.json()['Data']['brokerCustomerDTO']['brokerCustomerPhone'][0]['phoneId']}
+    Set Global Variable    ${phoneNo}
+    Set Global Variable    ${phoneId}
+
+【客户】编辑客户
+    ${name}    random_name
+    ${phone}    random_phone
+    ${Reponse}    【客户】编辑客户    ${ak}    ${customerId1}    自动化编辑${name.decode('utf8')}    2    ${phoneNo}
+    ...    ${phoneId}    86${phone}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+
+【客户】新增买房需求
+    ${districtIdList}    create list    ${-1}
+    ${purchasePreferDetailList}    create list    ${1}    ${2}    ${3}    ${4}    ${5}
+    ${roomList}    create list    ${1}    ${2}    ${3}    ${400}
+    ${Reponse}    【客户】新增买房需求    ${ak}    ${customerId1}    ${districtIdList}    ${160}    ${30}
+    ...    ${8000000}    ${1300000}    ${roomList}    ${purchasePreferDetailList}    ${112}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+
+【客户】新增卖房需求
+    ${districtIdList}    create list    ${-1}
+    ${purchasePreferDetailList}    create list    ${1}    ${2}    ${3}    ${4}    ${5}
+    ${roomList}    create list    ${1}    ${2}    ${3}    ${400}
+    ${Reponse}    【客户】新增卖房需求    ${ak}    ${customerId1}    ${2348700000}    ${123450}    ${112}
+    ...    杭州市    ${1}    ${3}    ${2}    ${1}    ${1}
+    ...    ${1}    ${1}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+
+【客户】新增出租需求
+    ${districtIdList}    create list    ${-1}
+    ${purchasePreferDetailList}    create list    ${1}    ${2}    ${3}    ${4}    ${5}
+    ${roomList}    create list    ${1}    ${2}    ${3}    ${400}
+    ${Reponse}    【客户】新增出租需求    ${ak}    ${customerId1}    ${2348700000}    ${123450}    ${112}
+    ...    杭州市    ${0}    ${3}    ${2}    ${1}    ${1}
+    ...    ${1}    ${1}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+
+【客户】新增求租需求
+    ${districtIdList}    create list    ${-1}
+    ${roomList}    create list    ${1}    ${2}    ${3}    ${400}
+    ${Reponse}    【客户】新增求租需求    ${ak}    ${customerId1}    ${districtIdList}    ${160}    ${30}
+    ...    ${10000}    ${700}    ${roomList}    ${112}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+
+【客户】删除客户
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    17
+    ${tc_name}    Set Variable    销冠经纪客户列表接口筛选
+    sleep    3
+    ${Reponse}    【客户】删除客户    ${ak}    ${customerId}
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+
+【客户】客户列表
+    [Timeout]
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    10
+    ${tc_name}    Set Variable    销冠经纪客户列表接口
+    log    客户列表接口
+    ${Reponse}    【客户】客户列表    ${ak}    1    0
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerId    brokerId    customerName    gender
+    ...    level    brokerCustomerPhone    phoneId    phone    firstLetter    operateType
+    ...    operateTime    sourceType    createTime
+    \    should contain    ${Reponse.text}    ${i}
+
+【客户】客户列表筛选
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    15
+    ${tc_name}    Set Variable    销冠经纪客户列表接口筛选
+    log    客户列表接口
+    ${Reponse}    【客户】客户列表    ${ak}    1    0    #跟进时间排序
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerId    brokerId    customerName    gender
+    ...    level    brokerCustomerPhone    phoneId    phone    firstLetter    operateType
+    ...    operateTime    sourceType    createTime
+    \    should contain    ${Reponse.text}    ${i}
+    ${Reponse}    【客户】客户列表    ${ak}    1    3    #跟进时间筛选
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerId    brokerId    customerName    gender
+    ...    level    brokerCustomerPhone    phoneId    phone    firstLetter    operateType
+    ...    operateTime    sourceType    createTime
+    \    should contain    ${Reponse.text}    ${i}
+    ${Reponse}    【客户】客户列表    ${ak}    2    0    #客户等级排序
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerId    brokerId    customerName    gender
+    ...    level    brokerCustomerPhone    phoneId    phone    firstLetter    operateType
+    ...    operateTime    sourceType    createTime
+    \    should contain    ${Reponse.text}    ${i}
+    ${Reponse}    【客户】客户列表    ${ak}    2    2    #客户等级筛选
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerId    brokerId    customerName    gender
+    ...    level    brokerCustomerPhone    phoneId    phone    firstLetter    operateType
+    ...    operateTime    sourceType    createTime
+    \    should contain    ${Reponse.text}    ${i}
+    ${Reponse}    【客户】客户列表    ${ak}    3    0    #订单时间排序
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerId    brokerId    customerName    gender
+    ...    level    brokerCustomerPhone    phoneId    phone    firstLetter    operateType
+    ...    operateTime    sourceType    createTime
+    \    should contain    ${Reponse.text}    ${i}
+    ${Reponse}    【客户】客户列表    ${ak}    4    0    #客户姓名排序
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerId    brokerId    customerName    gender
+    ...    level    brokerCustomerPhone    phoneId    phone    firstLetter    operateType
+    ...    operateTime    sourceType    createTime
+    \    should contain    ${Reponse.text}    ${i}
+
+【客户】客户搜索
+    ${product_id}    Set Variable    1
+    ${tc_id}    Set Variable    16
+    ${tc_name}    Set Variable    销冠经纪客户列表接口筛选
+    log    客户列表接口
+    ${Reponse}    【客户】客户搜索    ${ak}    测试
+    log    ${Reponse.text}
+    should be equal as numbers    ${Reponse.json()['Code']}    ${0}
+    : FOR    ${i}    IN    customerId    brokerId    customerName    gender
+    ...    level    brokerCustomerPhone    phoneId    phone    firstLetter    operateType
+    ...    operateTime    sourceType    createTime
+    \    should contain    ${Reponse.text}    ${i}
+
+test
+    ${familyname}    random_familyname
+    log    ${familyname.decode('utf8')}
