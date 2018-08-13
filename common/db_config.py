@@ -7,7 +7,7 @@ class Aliyun:
 
     # mock db
     ALIYUN_HOST = os.getenv('ALIYUN_HOST','rdsej341u9483k397ae5.mysql.rds.aliyuncs.com')
-    ALIYUN_MOCK = pymysql.connect(host=ALIYUN_HOST,user="data_mock", password="data_mock123", db="data_mock",
+    ALIYUN_MOCK = pymysql.connect(host=ALIYUN_HOST,user="service_monitor", password="service_monitor123", db="service_monitor",
                                   port=3306, charset="utf8")
 
 
