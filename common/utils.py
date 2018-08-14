@@ -16,6 +16,25 @@ class DateFormat(object):
         date_now = datetime.datetime.now().strftime(GMT_FORMAT)
         return date_now
 
+    def time_now(self):
+        GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+        time_now = datetime.datetime.now().strftime(GMT_FORMAT)
+        return time_now
+    def time_add(self,seconds):
+        now = datetime.datetime.now()
+        time = datetime.timedelta(seconds=seconds)
+        time_add = now - time
+        GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
+        time_add = (time_add).strftime(GMT_FORMAT)
+        return time_add
+
+d = DateFormat()
+print(type(d.time_now()))
+print(d.time_now())
+print(d.time_add(50))
+
+
 
 class DB(object):
 
