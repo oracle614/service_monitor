@@ -24,9 +24,9 @@ class Alarm:
             smtpObj.connect(mail_host, 25)  # 25 为 SMTP 端口号
             smtpObj.login(mail_user, mail_pass)
             smtpObj.sendmail(sender, receivers, message.as_string())
-            return "邮件发送成功"
+            return "Email sent successfully"
         except smtplib.SMTPException:
-            return "Error: 无法发送邮件"
+            return "Error: Email sent failed"
 
     def call_phone(self, phone_num):
 
