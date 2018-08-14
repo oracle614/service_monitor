@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Api
-from api.service_mock_result import PassResult, FailResult
+from api.service_monitor_result import PassResult, FailResult
 app = Flask(__name__)
 api = Api(app)
 

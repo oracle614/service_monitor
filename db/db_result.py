@@ -24,7 +24,11 @@ class DBResult(object):
             sql_pass = 'UPDATE service_product_result set passed_count={} where product_id={} and date="{}" and tc_name="{}"; '.format(passed_count, product_id, date, tc_name)
             print(sql_pass)
             mock_db.update(sql_pass)
-        return passed_count
+        sql_get_result = 'select result_id, tc_name, product_id, passed_count, failed_count from service_product_result where product_id={} and date="{}" and tc_name = "{}";'.format(product_id, date, tc_name)
+        print(sql_get_result)
+        result = mock_db.query(sql_get_result)
+        print(result[0])
+        return result[0]
 
     def fail_update(self, product_id, tc_name, date):
         failed_count = 1
@@ -41,7 +45,9 @@ class DBResult(object):
             sql_fail = 'UPDATE service_product_result set failed_count={} where product_id={} and date="{}" and tc_name="{}"; '.format(failed_count, product_id, date, tc_name)
             print(sql_fail)
             mock_db.update(sql_fail)
-        return failed_count
+        sql_get_result = 'select result_id, tc_name, product_id, passed_count, failed_count from service_product_result where product_id={} and date="{}" and tc_name = "{}";'.format(product_id, date, tc_name)
+        result = mock_db.query(sql_get_result)
+        return result[0]
 
     def get_pass_count(self, product_id, tc_name, date):
         try:
@@ -64,5 +70,5 @@ class DBResult(object):
 
 if __name__ == '__main__':
     result = DBResult()
-    print(result.pass_update('1', 'test_tc_name', date_format.date_now()))
+    print(result.fail_update('1', 'test_tc_name', date_format.date_now()))
     # print(result.get_pass_count(1, date_format.date_now()))

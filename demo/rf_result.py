@@ -140,12 +140,12 @@ def rf_failed(tc_id,tc_name,product_id,content):
 #邮件模块
 
 def rf_result_email(Addressee,to_list,file1,Subject,text):
-    print '发送邮件'
+    print( '发送邮件')
     def _format_addr(s):
         name, addr = parseaddr(s)
         return formataddr(( \
             Header(name, 'utf-8').encode(), \
-            addr.encode('utf-8') if isinstance(addr, unicode) else addr)) 
+            addr.encode('utf-8') if isinstance(addr) else addr))
     #详细邮件模块：http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/001386832745198026a685614e7462fb57dbf733cc9f3ad000
     msg = MIMEMultipart('')
     #构造附件1
@@ -179,8 +179,8 @@ def rf_result_email(Addressee,to_list,file1,Subject,text):
         server.sendmail(msg['from'], to_list,msg.as_string())
         server.quit()
         return 'Send success'
-    except Exception, e:  
-        return str(e)
+    except:
+        return 'Send fail'
 
 #用例失败告警通知
 def rf_failed_notice(max_count,count,content,email_parameter=['','','','','']):
