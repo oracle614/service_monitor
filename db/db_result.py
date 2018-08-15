@@ -46,7 +46,9 @@ class DBResult(object):
             print(sql_fail)
             mock_db.update(sql_fail)
         sql_get_result = 'select result_id, tc_name, product_id, passed_count, failed_count from service_product_result where product_id={} and date="{}" and tc_name = "{}";'.format(product_id, date, tc_name)
+        print(sql_get_result)
         result = mock_db.query(sql_get_result)
+        print(result)
         return result[0]
 
     def get_pass_count(self, product_id, tc_name, date):
