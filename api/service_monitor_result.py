@@ -40,8 +40,9 @@ class FailResult(Resource):
             failed_content = request.json['failed_content']
             date = date_format.date_now()
             res = db_result.fail_update(product_id=product_id, tc_name=tc_name, date=date)
-            print(product_id,tc_name,failed_content,date)
-            db_log.failed_log(tc_name=tc_name, result_id=res['result_id'], failed_content=failed_content)
+            print(product_id,tc_name,failed_content,date, res['result_id'])
+            db_log.failed_log(product_id=product_id, tc_name=tc_name, result_id=res['result_id'], failed_content=failed_content)
+
             return {"code": 0, "msg": res}
         except:
             return {"code": 1, "msg": "error operation"}
