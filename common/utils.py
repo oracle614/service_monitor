@@ -41,24 +41,36 @@ class DB(object):
     def __init__(self, db_url):
         self.db_url = db_url
 
-    def query(self, statement, **params):
+    def query(self, sql, **params):
         conn = self.db_url
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-        cursor.execute(statement)
+        # cursor.execute(statement)
+        try:
+            cursor.execute(sql)
+        except:
+            conn = self.db_url
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(sql)
+        cursor.close()
         return (cursor.fetchall())
 
-        cursor.close()
-
-    def update(self, statement, **params):
+    def update(self, sql, **params):
         # conn = pymysql.connect(self.db_url)
         # conn = pymysql.connect(host="rdsej341u9483k397ae5.mysql.rds.aliyuncs.com", user="data_mock",
         #                        password="data_mock123",
         #                        db="data_mock", port=3306)
         conn = self.db_url
         cursor = conn.cursor()
-        print(statement)
-        cursor.execute(statement)
+        print(sql)
+        # cursor.execute(statement)
+        try:
+            cursor.execute(sql)
+        except:
+            conn = self.db_url
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(sql)
         conn.commit()
         cursor.close()
+        return True
         # conn.close()
